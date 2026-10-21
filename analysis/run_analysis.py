@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from cwfc.config import GRID_SECONDS, HORIZON, TRAIN_SIZE
+from cwfc.config import GRID_SECONDS, HORIZON
 from cwfc.data import (
     audit_panel,
     build_segment_frame,
@@ -33,7 +33,7 @@ from cwfc.data import (
 )
 from cwfc.evaluation import cross_validate
 from cwfc.models import build_model
-from cwfc.pipeline import CV_STEP, _cv_window, run_pipeline
+from cwfc.pipeline import _cv_window, run_pipeline
 
 plt.rcParams.update({"figure.dpi": 110, "savefig.dpi": 130, "font.size": 9})
 
@@ -141,13 +141,14 @@ def main(data_dir: str, out_dir: str = "reports") -> None:
     # ------------------------------------------------------------- figures
     t = target["timestamp"].to_numpy() / 60.0  # minutes
     y = target["aggregate_cpu_utilization"].to_numpy()
-    cut_minute = TRAIN_SIZE * GRID_SECONDS / 60.0
+    split_idx = len(train)
+    cut_minute = split_idx * GRID_SECONDS / 60.0
 
     # 1. aggregate target series with split
     fig, ax = plt.subplots(figsize=(8, 3.4))
     ax.plot(t, y, lw=1.2, color="#1f4e79", label="aggregate CPU utilization (%)")
     ax.axvline(cut_minute, color="crimson", ls="--", lw=1, label="train / holdout split")
-    ax.scatter(t[TRAIN_SIZE:], actual, s=14, color="darkorange", label="held-out actuals", zorder=3)
+    ax.scatter(t[split_idx:], actual, s=14, color="darkorange", label="held-out actuals", zorder=3)
     ax.set_xlabel("minutes since trace start")
     ax.set_ylabel("mean CPU utilization (%)")
     ax.set_title("Aggregate CPU utilization on the 5-minute grid (134 observations)")

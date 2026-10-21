@@ -18,10 +18,11 @@ from sklearn.preprocessing import StandardScaler
 from .features import DEFAULT_LAGS, build_ar_design, recursive_feature_vector
 
 try:  # statsmodels is an explicit project dependency, but keep imports defensive
-    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+    from statsmodels.tsa.holtwinters import ExponentialSmoothing, SimpleExpSmoothing
     from statsmodels.tsa.statespace.sarimax import SARIMAX
 except Exception:  # pragma: no cover - exercised only in broken environments
     ExponentialSmoothing = None
+    SimpleExpSmoothing = None
     SARIMAX = None
 
 
@@ -115,7 +116,9 @@ class RidgeARForecaster(BaseForecaster):
 
     name = "ridge_ar"
 
-    def __init__(self, lags: tuple[int, ...] = DEFAULT_LAGS, alpha: float = 10.0) -> None:
+    def __init__(self, lags: tuple[int, ...] = DEFAULT_LAGS, alpha: float = 1.0) -> None:
+        # lags=(1,2), alpha=1.0 fixed from the training-only pre-study, which
+        # gave this config the best average rank across three CV designs.
         self.lags = tuple(lags)
         self.alpha = alpha
 
@@ -147,6 +150,37 @@ class RidgeARForecaster(BaseForecaster):
             out.append(yhat)
             known.append(yhat)
         return np.asarray(out, dtype=float)
+
+
+class SESForecaster(BaseForecaster):
+    """Simple exponential smoothing: exponentially weighted level, flat ahead."""
+
+    name = "ses"
+
+    def _fit(self, history: np.ndarray) -> None:
+        if SimpleExpSmoothing is None:
+            raise RuntimeError("statsmodels is required for SESForecaster")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.model_ = SimpleExpSmoothing(
+                history, initialization_method="estimated"
+            ).fit()
+
+    def _forecast(self, steps: int) -> np.ndarray:
+        return np.asarray(self.model_.forecast(steps), dtype=float)
+
+
+class DriftForecaster(BaseForecaster):
+    """Random walk with drift: last value plus the history-average slope."""
+
+    name = "drift"
+
+    def _fit(self, history: np.ndarray) -> None:
+        self.last_ = history[-1]
+        self.slope_ = (history[-1] - history[0]) / (len(history) - 1)
+
+    def _forecast(self, steps: int) -> np.ndarray:
+        return self.last_ + self.slope_ * np.arange(1, steps + 1)
 
 
 class ETSDampedForecaster(BaseForecaster):
@@ -188,6 +222,8 @@ _FORECASTER_REGISTRY: dict[str, type[BaseForecaster]] = {
     "persistence": PersistenceForecaster,
     "moving_average_6": MovingAverageForecaster,
     "seasonal_naive_12": SeasonalNaiveForecaster,
+    "ses": SESForecaster,
+    "drift": DriftForecaster,
     "ridge_ar": RidgeARForecaster,
     "ets_damped": ETSDampedForecaster,
     "arima_101": ARIMAForecaster,

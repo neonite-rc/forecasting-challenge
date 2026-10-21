@@ -30,13 +30,14 @@ from .evaluation import (
 )
 from .models import available_models, build_model
 
-# Rolling-origin CV inside the 110-point training window: three origins
-# (62, 74, 86), each evaluating a full 24-step horizon. The last fold ends
-# exactly at the training/holdout boundary, replicating the production task.
-# On smaller smoke datasets the window shrinks adaptively while keeping at
-# least one full-horizon fold.
-CV_MIN_TRAIN = 62
-CV_STEP = 12
+# Rolling-origin CV inside the 110-point training window: ten origins
+# (48, 52, ..., 86), each evaluating a full 24-step horizon. The last fold
+# ends exactly at the training/holdout boundary, replicating the production
+# task. Ten folds yield 240 out-of-sample residuals for model selection and
+# interval calibration. On smaller smoke datasets the window shrinks
+# adaptively while keeping at least one full-horizon fold.
+CV_MIN_TRAIN = 48
+CV_STEP = 4
 CV_SMOKE_FLOOR = 12
 
 

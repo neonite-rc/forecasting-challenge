@@ -1,7 +1,9 @@
 model,n_folds,mae_mean,rmse_mean,smape_mean
-persistence,3,0.0,0.0,0.0
-moving_average_6,3,0.0,0.0,0.0
-seasonal_naive_12,3,0.0,0.0,0.0
-ridge_ar,3,0.0,0.0,0.0
-ets_damped,3,0.0,0.0,0.0
-arima_101,3,0.0,0.0,0.0
+persistence,10,0.0,0.0,0.0
+moving_average_6,10,0.0,0.0,0.0
+seasonal_naive_12,10,0.0,0.0,0.0
+ses,10,0.0,0.0,0.0
+drift,10,0.0,0.0,0.0
+ridge_ar,10,0.0,0.0,0.0
+ets_damped,10,0.0,0.0,0.0
+arima_101,10,0.0,0.0,0.0

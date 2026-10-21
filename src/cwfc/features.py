@@ -12,7 +12,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-DEFAULT_LAGS = (1, 2, 3)
+DEFAULT_LAGS = (1, 2)  # chosen by the training-only pre-study (analysis/model_experiments.py)
 
 
 def lag_feature_table(
