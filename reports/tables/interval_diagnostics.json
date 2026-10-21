@@ -1,0 +1,6 @@
+{
+  "interval_80pct_holdout_coverage": 0.75,
+  "capacity_trigger_holdout_breach_rate": 0.041666666666666664,
+  "mean_capacity_headroom_pp": 0.17762220814171137,
+  "cv_fold_count": 3
+}

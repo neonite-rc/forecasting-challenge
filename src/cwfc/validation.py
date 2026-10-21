@@ -1,6 +1,13 @@
+"""Time-aware validation utilities.
+
+No random shuffling anywhere: every split is an expanding-window,
+rolling-origin design that mirrors production (forecast the next ``horizon``
+steps using only data available at the origin).
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import pandas as pd
 
 
@@ -38,3 +45,44 @@ def rolling_origin_splits(
         out.append(TimeSplit(train_end, val_start, val_end))
         train_end_idx += step
     return out
+
+
+@dataclass(frozen=True)
+class IndexSplit:
+    """Integer-position expanding-window split."""
+
+    train_start: int
+    train_end: int  # exclusive
+    test_start: int
+    test_end: int  # exclusive
+
+    @property
+    def origin(self) -> int:
+        return self.test_start
+
+
+def rolling_origin_indices(
+    n: int,
+    horizon: int,
+    min_train_size: int,
+    step: int | None = None,
+) -> list[IndexSplit]:
+    """Expanding-window splits on positional indices.
+
+    Produces every origin ``o`` with ``o >= min_train_size`` and
+    ``o + horizon <= n``, spaced ``step`` observations apart.
+    """
+    if horizon <= 0 or min_train_size <= 0:
+        raise ValueError("horizon and min_train_size must be positive")
+    if min_train_size + horizon > n:
+        raise ValueError(
+            f"not enough observations ({n}) for min_train={min_train_size} "
+            f"and horizon={horizon}"
+        )
+    step = horizon if step is None else step
+    splits: list[IndexSplit] = []
+    origin = min_train_size
+    while origin + horizon <= n:
+        splits.append(IndexSplit(0, origin, origin, origin + horizon))
+        origin += step
+    return splits

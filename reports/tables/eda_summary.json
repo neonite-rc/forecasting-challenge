@@ -1,0 +1,50 @@
+{
+  "panel_audit": {
+    "n_rows": 1340000,
+    "n_vms": 10000,
+    "n_timestamps": 134,
+    "timestamp_min": 0,
+    "timestamp_max": 39900,
+    "regular_five_minute_grid": true,
+    "duplicate_vm_timestamp_rows": 0,
+    "null_cells": 0,
+    "observations_per_vm_min": 134,
+    "observations_per_vm_max": 134,
+    "active_vm_count_min": 10000,
+    "active_vm_count_max": 10000
+  },
+  "aggregate_util": {
+    "mean": 9.388100729421827,
+    "std": 0.19498686475967825,
+    "min": 8.983613452960672,
+    "max": 9.912175173984913,
+    "cv_percent": 2.0769575271875746
+  },
+  "vm_level_avg_cpu": {
+    "mean_of_vm_means": 9.38810072942183,
+    "median_of_vm_means": 5.480792662056373,
+    "pct_readings_below_1pct": 7.58589552238806,
+    "pct_readings_below_5pct": 49.049477611940304,
+    "pct_readings_above_50pct": 3.077611940298507,
+    "median_vm_temporal_cv_percent": 28.65296489807982
+  },
+  "metadata": {
+    "subscriptions": 2324,
+    "deployments": 2359,
+    "all_created_at_zero": true,
+    "min_delete_seconds": 40500,
+    "window_end_seconds": 39900,
+    "category_counts": {
+      "Delay-insensitive": 6180,
+      "Interactive": 3091,
+      "Unknown": 729
+    },
+    "core_bucket_counts": {
+      "2": 7534,
+      "4": 1908,
+      "8": 486,
+      "24": 62,
+      ">24": 10
+    }
+  }
+}

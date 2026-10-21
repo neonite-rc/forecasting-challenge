@@ -2,3 +2,16 @@
 .venv/
 .pytest_cache/
 __pycache__/
+.ipynb_checkpoints/
+
+# Challenge data is distributed via the GitHub Release, never committed.
+challenge_data/vm_cpu_readings.csv.gz
+challenge_data/vm_metadata.csv.gz
+challenge_data/SHA256SUMS
+challenge_data/DATA_CARD.md
+
+# Downloaded release archives
+*.tar.gz
+
+# Local scratch/output
+artifacts/

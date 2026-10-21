@@ -1,129 +1,116 @@
-# Cloud Workload Forecasting Challenge
+# Cloud Workload Forecasting Challenge — Solution
 
-AI/ML take-home challenge built from the **Microsoft Azure Public Dataset V2** VM trace.
+End-to-end, leakage-safe forecasting solution for the curated **Microsoft Azure
+Public Dataset V2** VM trace (10,000 VMs × 134 five-minute CPU observations).
+Forked from [`atomityhq/forecasting-challenge`](https://github.com/atomityhq/forecasting-challenge).
 
-## Start here
+The full write-up is in **[`reports/final_report.md`](reports/final_report.md)**.
 
-1. Read [`ASSIGNMENT.md`](ASSIGNMENT.md).
-2. Read [`DATASET.md`](DATASET.md).
-3. Download the **`data-v1` GitHub Release** dataset and extract it as `challenge_data/`.
-4. Read [`SUBMISSION.md`](SUBMISSION.md).
-5. Implement your analysis and forecasting pipeline.
+## Headline result
 
-The challenge dataset is distributed as a versioned GitHub Release rather than committed to the repository. The `data-v1` release contains the fixed curated dataset used for this assignment.
+| Target | Selected model | Holdout MAE | Holdout RMSE | vs. persistence |
+|---|---|---:|---:|---:|
+| `aggregate_cpu_utilization` | recursive Ridge AR (lags 1–3) | 0.101 pp | 0.122 pp | **−31.4 % MAE** |
+| `active_vm_count` | persistence (constant 10,000) | 0.000 | 0.000 | exact |
 
-## Environment setup
+Model selection used only expanding-window rolling-origin CV inside the first
+110 observations; the final 24 observations were touched once for reporting.
 
-Python **3.11 or newer** is required.
+## Repository layout
 
-Create a virtual environment:
+```text
+src/cwfc/
+  config.py        # challenge contract constants (grid, 110/24 split, targets)
+  data.py          # loading, panel audit, target construction, chronological split
+  features.py      # leakage-safe lag features (past values only)
+  models.py        # persistence, moving-average, seasonal-naive, ETS, ARIMA, Ridge AR
+  validation.py    # rolling-origin index/timestamp splitters (no shuffling)
+  evaluation.py    # CV, holdout scoring, empirical intervals, capacity trigger
+  pipeline.py      # end-to-end orchestration (selection -> refit -> forecast)
+  predict.py       # CLI producing predictions.csv
+analysis/
+  run_analysis.py  # regenerates every EDA table and figure in reports/
+tests/             # 24 tests: targets, leakage, models, intervals, smoke-dataset CLI
+reports/
+  final_report.md  # 4–6 page report (9 required sections)
+  tables/          # CV leaderboards, metrics, interval diagnostics (CSV/JSON)
+  figures/         # 8 figures referenced by the report
+predictions.csv    # required submission artifact (24 rows, exact contract schema)
+```
 
-### Linux / macOS
+## Setup
+
+Requires Python 3.11+.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### Windows PowerShell
-
-```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-```
-
-### Windows Command Prompt
-
-```cmd
-py -m venv .venv
-.venv\Scripts\activate.bat
-```
-
-Install the project and development dependencies:
-
-```bash
+python -m venv .venv && source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev]"          # or: pip install -r requirements.txt
 ```
 
-Verify the installation:
+## Dataset
+
+Download `data-v1.tar.gz` from the
+[data-v1 release](https://github.com/atomityhq/forecasting-challenge/releases/tag/data-v1)
+and extract it so the data lives under `challenge_data/` (never committed):
+
+```bash
+mkdir -p challenge_data
+tar -xzf data-v1.tar.gz -C challenge_data
+cd challenge_data && sha256sum -c SHA256SUMS
+```
+
+## Reproduce the submission
+
+One command, from a clean checkout, produces `predictions.csv`:
+
+```bash
+python -m cwfc.predict --data challenge_data --output predictions.csv \
+    --artifacts-dir reports/tables
+```
+
+Output schema (exactly 24 rows, chronological, no index column):
+
+```text
+timestamp,active_vm_count,aggregate_cpu_utilization
+```
+
+Regenerate all analysis tables and figures:
+
+```bash
+python analysis/run_analysis.py --data challenge_data
+```
+
+Run the tests (includes an end-to-end run on a tiny synthetic release-shaped
+smoke dataset, verifying the pipeline is not hard-coded to the supplied files):
 
 ```bash
 python -m pytest -q
 ```
 
-The repository includes a small test suite covering the starter forecasting utilities. Run it before beginning the assignment.
+## Main modeling decisions
 
-## Dataset download
+1. **Targets first, split second.** Aggregate targets are built from the full
+   panel; the chronological 110/24 split is applied afterwards, making leakage
+   structurally impossible.
+2. **Native five-minute cadence retained** — only 134 observations exist, so
+   coarsening would throw away signal.
+3. **Lag-only features (1, 2, 3).** Autocorrelation is short-memory (lag-1
+   ACF 0.66, ≈ 0 by lag 24); trend/calendar terms have no defensible
+   interpretation with relative timestamps and an 11.1-hour window, and CV
+   showed them destabilizing recursive forecasts.
+4. **Ridge with `alpha=10`** chosen by training-only CV over lag sets and
+   regularization strengths; shrinkage controls recursive error accumulation.
+5. **Six-model leaderboard under identical rolling-origin CV**, with
+   persistence as the required baseline; sophisticated ETS/ARIMA models lose
+   honestly rather than being excluded.
+6. **Uncertainty from 72 out-of-sample CV residuals:** constant-width 80 %
+   empirical intervals and a one-sided p90 capacity trigger (forecast +
+   0.18 pp), breached in only 1/24 holdout periods.
+7. **No holdout target values** are used in any fit, feature, tuning, or
+   selection step; tests assert feature rows cannot see their own target.
 
-The hiring dataset is distributed as the fixed `data-v1` release of this repository.
+## Dependencies
 
-**Download:** [Azure Dataset v1 Release](https://github.com/atomityhq/forecasting-challenge/releases/tag/data-v1)
-
-Download `data-v1.tar.gz` from the release and extract it into the repository as `challenge_data/`:
-
-```bash
-mkdir -p challenge_data
-tar -xzf data-v1.tar.gz -C challenge_data
-```
-
-The resulting layout is:
-
-```text
-challenge_data/
-├── vm_cpu_readings.csv.gz
-├── vm_metadata.csv.gz
-├── DATA_CARD.md
-└── SHA256SUMS
-```
-
-Verify the dataset before starting the assignment:
-
-```bash
-cd challenge_data
-sha256sum -c SHA256SUMS
-```
-
-You should see:
-
-```text
-vm_cpu_readings.csv.gz: OK
-vm_metadata.csv.gz: OK
-DATA_CARD.md: OK
-```
-
-The release is a real, curated subset of the Microsoft Azure Public Dataset V2. It is not synthetic data.
-
-The dataset contains 10,000 VMs with 134 CPU measurements per VM at five-minute intervals, for a total of 1,340,000 CPU observations.
-
-Use the exact `data-v1` release provided for this assignment. Do not substitute another dataset or a different version of the Azure Public Dataset.
-
-## What you are solving
-
-The underlying data contains anonymized VM workload telemetry sampled every five minutes. Your job is to understand the workload and build a defensible forecasting pipeline for near-term aggregate demand.
-
-The challenge is intentionally open-ended. We evaluate reasoning, time-series methodology, leakage prevention, error analysis, reproducibility, and the quality of your operational conclusions—not just model complexity.
-
-## Expected environment
-
-Python 3.11+ is recommended.
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
-pytest -q
-```
-
-Model dependencies are intentionally not prescribed. Add only what you need and document them.
-
-## Source
-
-Microsoft Azure Public Dataset V2:
-https://github.com/Azure/AzurePublicDataset
-
-The official V2 documentation describes a 30-day VM trace with five-minute CPU readings, VM metadata, and encrypted subscription/deployment/VM identifiers. The full upstream trace is much larger than this challenge release.
-
-## Submission
-
-Submit your work as a repository or archive according to [`SUBMISSION.md`](SUBMISSION.md).
+numpy, pandas, scikit-learn, statsmodels (runtime); pytest, matplotlib
+(analysis/dev). See `pyproject.toml` / `requirements.txt`.

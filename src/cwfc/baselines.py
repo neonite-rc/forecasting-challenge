@@ -10,6 +10,17 @@ def persistence_forecast(train: pd.DataFrame, template: pd.DataFrame, target: st
     return pd.Series(last_value, index=template.index, dtype=float)
 
 
+def moving_average_forecast(
+    train: pd.DataFrame, template: pd.DataFrame, target: str, window: int = 6
+) -> pd.Series:
+    if window <= 0:
+        raise ValueError("window must be positive")
+    if train.empty:
+        raise ValueError("train must not be empty")
+    avg = float(train[target].astype(float).tail(window).mean())
+    return pd.Series(avg, index=template.index, dtype=float)
+
+
 def seasonal_naive_forecast(train: pd.DataFrame, template: pd.DataFrame, target: str, season_length: int) -> pd.Series:
     if season_length <= 0:
         raise ValueError("season_length must be positive")
