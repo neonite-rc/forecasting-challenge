@@ -6,7 +6,6 @@ Forked from [`atomityhq/forecasting-challenge`](https://github.com/atomityhq/for
 
 - Full write-up: **[`reports/final_report.md`](reports/final_report.md)**
 - Decision journal (rationale, dead ends, selection robustness): **[`JOURNEY.md`](JOURNEY.md)**
-- Step-by-step run + screenshot instructions: **[`docs/SCREENSHOT_GUIDE.md`](docs/SCREENSHOT_GUIDE.md)**
 
 ## Headline result
 
@@ -44,7 +43,6 @@ reports/
   tables/          # CV leaderboards, metrics, interval diagnostics (CSV/JSON)
   figures/         # 9 figures referenced by the report
 JOURNEY.md         # narrative of the reasoning, iterations and failed approaches
-docs/              # runbook + screenshot guide (docs/SCREENSHOT_GUIDE.md)
 Makefile           # install / test / predict / analysis / experiments targets
 conftest.py        # pytest sys.path bootstrap (tests run pre-install too)
 predict.py         # install-free entry point, identical to `python -m cwfc.predict`

@@ -13,8 +13,7 @@ from .pipeline import run_pipeline
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="python -m cwfc.predict",
-        description="Forecast the 24-step, two-hour holdout.",
+        description="Forecast the 24-step, two-hour holdout."
     )
     parser.add_argument(
         "--data",
