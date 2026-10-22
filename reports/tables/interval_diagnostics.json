@@ -8,6 +8,6 @@
   "fold_outside_rate_80pct_mean": 0.2,
   "fold_outside_rate_80pct_sd": 0.11587029785896784,
   "cv_fold_count": 10,
-  "selection_test_paired_t_pvalue": 0.5944540010854108,
+  "selection_test_paired_t_pvalue": 0.5944540010854105,
   "selection_test_wilcoxon_pvalue": 0.845703125
 }

@@ -1,0 +1,6 @@
+wrote 24 predictions to predictions.csv
+  active_vm_count: selected model = persistence
+    holdout MAE=0.0000 RMSE=0.0000 sMAPE=0.000% rel.MAE(persistence)=0.000
+  aggregate_cpu_utilization: selected model = ridge_ar
+    holdout MAE=0.1240 RMSE=0.1491 sMAPE=1.336% rel.MAE(persistence)=0.845
+wrote CV artifacts to reports/tables

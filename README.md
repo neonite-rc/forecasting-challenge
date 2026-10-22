@@ -108,6 +108,17 @@ Run the full suite directly with `python -m pytest -q`. The smoke-dataset
 tests verify the pipeline is not hard-coded to the supplied files and that
 repeated runs are byte-for-byte deterministic.
 
+## Screenshots and evidence
+
+Screenshots of the reproduction runs and the nine report figures are available in
+`docs/screenshots/`.
+
+* Terminal outputs: `01_pytest.png`, `02_predict_cli.png`, `03_predictions_csv.png`,
+  `04_analysis_cli.png`, `05_artifacts_listing.png`, `06_experiments.png`,
+  `07_make_all.png` (also as `.txt` logs)
+* Report figures: `08_fig01_target.png` … `16_fig09_calibration.png` – the nine
+  figures from `reports/figures/` opened full-size.
+
 ## Main modeling decisions
 
 1. **Targets first, split second.** Aggregate targets are built from the full

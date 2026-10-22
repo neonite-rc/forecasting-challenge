@@ -1,0 +1,26 @@
+analysis artifacts written to reports/
+{
+  "mae": 0.12396365606339439,
+  "rmse": 0.149101195229035,
+  "smape": 1.3359816955448804,
+  "baseline_mae": 0.14678245915042334,
+  "baseline_rmse": 0.18478539074333672,
+  "mae_relative_to_persistence": 0.8445399864595255,
+  "peak_mae": 0.06358088740834389,
+  "offpeak_mae": 0.15415504039091965,
+  "max_abs_error": 0.2787598076937332,
+  "mean_error_bias": 0.08705659787752025
+}
+{
+  "interval_80pct_holdout_coverage": 1.0,
+  "capacity_trigger_method": "empirical p90 of pooled CV residuals",
+  "capacity_trigger_holdout_breach_rate_empirical": 0.0,
+  "capacity_trigger_holdout_breach_rate_gaussian": 0.0,
+  "mean_capacity_headroom_pp_empirical": 0.38618943206494727,
+  "mean_capacity_headroom_pp_gaussian": 0.3041130111124861,
+  "fold_outside_rate_80pct_mean": 0.2,
+  "fold_outside_rate_80pct_sd": 0.11587029785896784,
+  "cv_fold_count": 10,
+  "selection_test_paired_t_pvalue": 0.5944540010854105,
+  "selection_test_wilcoxon_pvalue": 0.845703125
+}

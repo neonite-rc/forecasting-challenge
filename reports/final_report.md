@@ -5,6 +5,7 @@
 **Holdout:** final 24 observations (2 hours), never used for fitting, feature selection, tuning, or model selection
 **Selected model:** recursive autoregressive Ridge regression on lags 1–2, `alpha = 1` (`ridge_ar`), selected by a 22-candidate pre-study and 10-fold rolling-origin CV on the training window
 **Decision journal:** see [`JOURNEY.md`](../JOURNEY.md) for the full rationale, failed approaches and selection-robustness analysis
+**Screenshots:** reproduction run screenshots and report figures are in `../docs/screenshots/`.
 
 ---
 

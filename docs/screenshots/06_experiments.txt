@@ -1,0 +1,88 @@
+
+== dense 10-fold (min_train=48, step=4) ==
+ridge_l12_a1                 RMSE=0.2278 MAE=0.1976 fold_sd=0.0682
+ridge_l12_a10                RMSE=0.2286 MAE=0.1989 fold_sd=0.0676
+ridge_l1_a1                  RMSE=0.2303 MAE=0.2011 fold_sd=0.0663
+ridge_l123_a10               RMSE=0.2310 MAE=0.1986 fold_sd=0.0665
+ridge_l1_a10                 RMSE=0.2319 MAE=0.2027 fold_sd=0.0654
+ridge_l1236_a100             RMSE=0.2334 MAE=0.2037 fold_sd=0.0627
+elasticnet_l123              RMSE=0.2340 MAE=0.2012 fold_sd=0.0656
+ridge_l1236_a10              RMSE=0.2370 MAE=0.2055 fold_sd=0.0620
+ens_ridge_persistence        RMSE=0.2392 MAE=0.2055 fold_sd=0.0832
+ridge_l123_a1                RMSE=0.2400 MAE=0.2072 fold_sd=0.0635
+ens_ridge_persistence_ses    RMSE=0.2479 MAE=0.2151 fold_sd=0.0903
+ens_ridge_ets                RMSE=0.2578 MAE=0.2257 fold_sd=0.0845
+hgbr_l123                    RMSE=0.2680 MAE=0.2370 fold_sd=0.1126
+ses                          RMSE=0.2681 MAE=0.2355 fold_sd=0.1103
+persistence                  RMSE=0.2826 MAE=0.2467 fold_sd=0.1135
+moving_average_6             RMSE=0.2830 MAE=0.2510 fold_sd=0.1098
+ets_damped                   RMSE=0.2948 MAE=0.2609 fold_sd=0.1376
+ridge_diff_l123              RMSE=0.3197 MAE=0.2775 fold_sd=0.1509
+seasonal_naive_12            RMSE=0.3199 MAE=0.2832 fold_sd=0.0854
+drift                        RMSE=0.3261 MAE=0.2864 fold_sd=0.1490
+arima_101                    RMSE=0.4420 MAE=0.3821 fold_sd=0.3184
+arima_innovations_mle        RMSE=0.6247 MAE=0.5871 fold_sd=0.9429
+
+== expanded 7-fold (min_train=48, step=6) ==
+ridge_l12_a10                RMSE=0.2324 MAE=0.2022 fold_sd=0.0720
+ridge_l12_a1                 RMSE=0.2329 MAE=0.2026 fold_sd=0.0717
+ridge_l1_a1                  RMSE=0.2343 MAE=0.2049 fold_sd=0.0708
+ridge_l1_a10                 RMSE=0.2350 MAE=0.2056 fold_sd=0.0704
+ridge_l1236_a100             RMSE=0.2353 MAE=0.2054 fold_sd=0.0677
+ridge_l123_a10               RMSE=0.2353 MAE=0.2024 fold_sd=0.0723
+elasticnet_l123              RMSE=0.2387 MAE=0.2054 fold_sd=0.0705
+ridge_l1236_a10              RMSE=0.2405 MAE=0.2088 fold_sd=0.0682
+ridge_l123_a1                RMSE=0.2468 MAE=0.2131 fold_sd=0.0671
+ens_ridge_persistence        RMSE=0.2607 MAE=0.2286 fold_sd=0.0630
+ens_ridge_persistence_ses    RMSE=0.2684 MAE=0.2360 fold_sd=0.0724
+ens_ridge_ets                RMSE=0.2728 MAE=0.2383 fold_sd=0.0784
+hgbr_l123                    RMSE=0.2765 MAE=0.2455 fold_sd=0.1080
+ses                          RMSE=0.2874 MAE=0.2531 fold_sd=0.1048
+moving_average_6             RMSE=0.2875 MAE=0.2532 fold_sd=0.1102
+persistence                  RMSE=0.2991 MAE=0.2655 fold_sd=0.1145
+ets_damped                   RMSE=0.3163 MAE=0.2798 fold_sd=0.1307
+seasonal_naive_12            RMSE=0.3182 MAE=0.2809 fold_sd=0.0915
+ridge_diff_l123              RMSE=0.3222 MAE=0.2824 fold_sd=0.1496
+drift                        RMSE=0.3423 MAE=0.3047 fold_sd=0.1502
+arima_101                    RMSE=0.4804 MAE=0.4091 fold_sd=0.2654
+arima_innovations_mle        RMSE=0.7800 MAE=0.7411 fold_sd=1.1083
+
+== original 3-fold (min_train=62, step=12) ==
+ridge_l123_a10               RMSE=0.1935 MAE=0.1678 fold_sd=0.0258
+elasticnet_l123              RMSE=0.1949 MAE=0.1683 fold_sd=0.0233
+ridge_l12_a1                 RMSE=0.1951 MAE=0.1712 fold_sd=0.0293
+ridge_l12_a10                RMSE=0.1978 MAE=0.1734 fold_sd=0.0271
+ridge_l123_a1                RMSE=0.1985 MAE=0.1701 fold_sd=0.0146
+ridge_l1236_a10              RMSE=0.1993 MAE=0.1736 fold_sd=0.0285
+ridge_l1_a1                  RMSE=0.2005 MAE=0.1750 fold_sd=0.0249
+ens_ridge_persistence        RMSE=0.2007 MAE=0.1713 fold_sd=0.0364
+ridge_l1_a10                 RMSE=0.2032 MAE=0.1775 fold_sd=0.0231
+ridge_l1236_a100             RMSE=0.2057 MAE=0.1817 fold_sd=0.0277
+ens_ridge_persistence_ses    RMSE=0.2140 MAE=0.1851 fold_sd=0.0522
+persistence                  RMSE=0.2174 MAE=0.1848 fold_sd=0.1112
+ens_ridge_ets                RMSE=0.2297 MAE=0.2005 fold_sd=0.0468
+ses                          RMSE=0.2428 MAE=0.2132 fold_sd=0.0917
+drift                        RMSE=0.2467 MAE=0.2098 fold_sd=0.1615
+hgbr_l123                    RMSE=0.2652 MAE=0.2388 fold_sd=0.1202
+seasonal_naive_12            RMSE=0.2755 MAE=0.2460 fold_sd=0.1344
+ets_damped                   RMSE=0.2764 MAE=0.2432 fold_sd=0.1291
+moving_average_6             RMSE=0.2790 MAE=0.2491 fold_sd=0.1038
+ridge_diff_l123              RMSE=0.2816 MAE=0.2464 fold_sd=0.1480
+arima_innovations_mle        RMSE=0.2870 MAE=0.2523 fold_sd=0.1445
+arima_101                    RMSE=0.4124 MAE=0.3641 fold_sd=0.2517
+
+== intercept-correction study (dense 10-fold) ==
+ridge_no_correction          RMSE=0.2278 fold_sd=0.0682
+bias_insample_last12         RMSE=0.2721 fold_sd=0.1187
+bias_insample_all            RMSE=0.2278 fold_sd=0.0682
+bias_prior_folds             RMSE=0.4362 fold_sd=0.2154
+
+== paired test: lags(1,2) a=1 vs lags(1,2,3) a=10 (dense 10-fold) ==
+folds                        10
+rmse_lags12_alpha1           0.2278358615652365
+rmse_lags123_alpha10         0.23100578842287275
+mean_paired_diff             -0.0031699268576362767
+folds_won_by_lags12          5
+folds_won_by_lags123         5
+paired_t_pvalue              0.5944540010854105
+wilcoxon_pvalue              0.845703125
