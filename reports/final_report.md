@@ -195,7 +195,7 @@ be preferred under skew because it needs no normality assumption
 4. **Segment rule:** monitor Interactive VMs (11.5 % mean, hotter) and the volatile Unknown category on separate dashboards; apply a wider margin (their residual σ is ~2–3× the fleet aggregate) if they are scheduled onto dedicated pools.
 5. **Right-sizing program:** independently of forecasting, audit the 49 % of VM-intervals under 5 % CPU for downsizing or consolidation — the expected savings dwarf the ~3 % aggregate safety buffer.
 
-**Trade-off.** Under-provisioning risks throttling and SLA breaches during unforecastable spikes; over-provisioning wastes cost. With a fleet already averaging <10 % CPU, a 0.30 pp insurance margin is cheap, while the pre-study's evidence of occasional breaches shows why a zero-margin policy is unwise. Intervals should be re-calibrated as more folds/data accumulate.
+**Trade-off.** Under-provisioning risks throttling and SLA breaches during unforecastable spikes; over-provisioning wastes cost. With a fleet already averaging <10 % CPU, a 0.30–0.39 pp insurance margin — 0.30 pp under the Gaussian variant, 0.39 pp under the empirical p90 default — is cheap, while the pre-study's evidence of occasional breaches shows why a zero-margin policy is unwise. Intervals should be re-calibrated as more folds/data accumulate.
 
 ## 9. Limitations and future work
 
@@ -210,4 +210,4 @@ be preferred under skew because it needs no normality assumption
 
 ### Reproducibility
 
-`python -m cwfc.predict --data challenge_data --output predictions.csv --artifacts-dir reports/tables` regenerates the submission and CV artifacts; `python analysis/run_analysis.py --data challenge_data` regenerates every table and figure; `python analysis/model_experiments.py --data challenge_data` reruns the 22-candidate pre-study; `pytest -q` runs 32 tests including leakage-safe feature checks, determinism, and a smoke-dataset end-to-end run of both the CLI and the full analysis. Or simply `make all`.
+`python -m cwfc.predict --data challenge_data --output predictions.csv --artifacts-dir reports/tables` regenerates the submission and CV artifacts; `python analysis/run_analysis.py --data challenge_data` regenerates every table and figure; `python analysis/model_experiments.py --data challenge_data` reruns the 22-candidate pre-study; `pytest -q` runs 33 tests including leakage-safe feature checks, determinism, and a smoke-dataset end-to-end run of both the CLI and the full analysis. Or simply `make all`.

@@ -36,7 +36,7 @@ src/cwfc/
 analysis/
   run_analysis.py      # regenerates every EDA table and figure in reports/
   model_experiments.py # training-only 22-candidate pre-study (evidence for choices)
-tests/             # 32 tests: targets, leakage, models, intervals, determinism,
+tests/             # 33 tests: targets, leakage, models, intervals, determinism,
                    #         smoke-dataset end-to-end CLI + full analysis run
 reports/
   final_report.md  # 4–6 page report (9 required sections)
@@ -44,6 +44,8 @@ reports/
   figures/         # 9 figures referenced by the report
 JOURNEY.md         # narrative of the reasoning, iterations and failed approaches
 Makefile           # install / test / predict / analysis / experiments targets
+conftest.py        # pytest sys.path bootstrap (tests run pre-install too)
+predict.py         # install-free entry point, identical to `python -m cwfc.predict`
 predictions.csv    # required submission artifact (24 rows, exact contract schema)
 ```
 
@@ -79,6 +81,14 @@ python -m cwfc.predict --data challenge_data --output predictions.csv \
 # equivalent: make predict
 ```
 
+If you have installed the dependencies from `requirements.txt` but skipped the
+editable package install, the install-free shim works identically:
+
+```bash
+python predict.py --data challenge_data --output predictions.csv \
+    --artifacts-dir reports/tables
+```
+
 Output schema (exactly 24 rows, chronological, no index column):
 
 ```text
@@ -88,7 +98,7 @@ timestamp,active_vm_count,aggregate_cpu_utilization
 Other workflows:
 
 ```bash
-make test          # 32 tests, incl. synthetic smoke-dataset end-to-end run
+make test          # 33 tests, incl. synthetic smoke-dataset end-to-end run
 make analysis      # all EDA tables and 9 report figures
 make experiments   # rerun the 22-candidate training-only pre-study
 make all           # test + predict + analysis

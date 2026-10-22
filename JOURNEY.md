@@ -101,7 +101,8 @@ Scored on training data only, across all three CV schemes:
 | Persistence (baseline) | 0.283 | Strong baseline — the bar every model had to clear |
 | Damped ETS / seasonal-naïve / drift | 0.295–0.326 | Trend extrapolation and phantom hourly seasonality both lose |
 | Differenced AR | 0.320 | Predicting deltas adds a noise layer when the level itself is stable |
-| ARIMA(1,0,1) | 0.442 | Worst: fragile MLE on 110 points, trend overshoot; kept only as an honest benchmark with an ETS fallback |
+| ARIMA(1,0,1), statespace MLE | 0.442 | Fragile MLE on 110 points, trend overshoot; kept only as an honest benchmark with an ETS fallback |
+| ARIMA innovations/CSS-like estimator | 0.625 | Added in the refinement round (§12, the 22nd candidate): the non-Kalman estimator is even less stable across origins (fold SD 0.94), proving the failure is the trend-ARMA specification rather than the optimizer |
 
 Two candidates from this study (SES and drift) were cheap, dependency-free
 benchmarks worth keeping in the registry; the rest of the losers are
@@ -136,10 +137,12 @@ one cherry-picked holdout metric.
    separate line `forecast + 1.2816·σ_residual` was added. On the current draw
    it is breached 0/24 times at ~0.30 pp headroom; the earlier model draw
    breached 1/24 at ~0.18 pp. Both are reported as evidence, not a promise —
-   the margin should be re-calibrated as more folds accumulate. **Updated in
-   §12:** review feedback correctly noted the Gaussian multiplier assumes
-   normality, so the production default is now the empirical p90 residual
-   quantile (0.39 pp); the Gaussian line is retained only as a comparison.
+   the margin should be re-calibrated as more folds accumulate.
+
+*Post-review update to this section:* the Gaussian multiplier assumes
+normality, so the production default was changed to the empirical p90
+residual quantile (0.39 pp); the Gaussian 1.28σ line (0.30 pp) is retained
+only as a comparison. Full rationale and numbers are in §12, point 6.
 
 ## 9. Errors actually hit while building it (for the "code working" record)
 
@@ -241,17 +244,21 @@ Two engineering issues surfaced while building this round and were fixed
 properly rather than worked around: (a) direct execution of
 `python analysis/run_analysis.py` failed before an editable install because
 the repo root wasn't on `sys.path` — both analysis scripts now bootstrap their
-own paths, so the documented commands work from a clean checkout; (b) the
-analysis hard-coded the 110-point split position, which would have failed on
-a reviewer's shorter smoke dataset — the split is now derived from the data
-and the full nine-figure analysis is covered by an end-to-end smoke test.
+own paths, a root `conftest.py` makes `pytest` pass pre-install, and a root
+`predict.py` shim reproduces `python -m cwfc.predict` without an editable
+install (a subprocess test locks this in), so every documented command works
+from a clean checkout as long as the declared third-party dependencies are
+installed; (b) the analysis hard-coded the 110-point split position, which
+would have failed on a reviewer's shorter smoke dataset — the split is now
+derived from the data and the full nine-figure analysis is covered by an
+end-to-end smoke test.
 
 ---
 
 ### One-command verification
 
 ```bash
-make install && make test        # 32 tests, incl. smoke-dataset end-to-end
+make install && make test        # 33 tests, incl. smoke-dataset end-to-end
 make predict                     # predictions.csv + CV artifacts
 make analysis                    # every figure and table in reports/
 make experiments                 # rerun the full training-only pre-study
