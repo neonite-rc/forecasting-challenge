@@ -5,7 +5,7 @@ Public Dataset V2** VM trace (10,000 VMs × 134 five-minute CPU observations).
 Forked from [`atomityhq/forecasting-challenge`](https://github.com/atomityhq/forecasting-challenge).
 
 - Full write-up: **[`reports/final_report.md`](reports/final_report.md)**
-- Decision journal (rationale, dead ends, selection robustness): **[`JOURNEY.md`](JOURNEY.md)**
+- Decision journal (rationale, dead ends): **[`JOURNEY.md`](JOURNEY.md)**
 
 ## Headline result
 
