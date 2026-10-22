@@ -86,7 +86,7 @@ shares origins with the original scheme, and (c) it materially improves
 interval calibration. The fold count adapts downward automatically on tiny
 smoke datasets, so the CLI never hard-fails on short series.
 
-## 6. The 21-candidate pre-study and what each dead end taught
+## 6. The 22-candidate pre-study and what each dead end taught
 
 Scored on training data only, across all three CV schemes:
 
@@ -136,7 +136,10 @@ one cherry-picked holdout metric.
    separate line `forecast + 1.2816·σ_residual` was added. On the current draw
    it is breached 0/24 times at ~0.30 pp headroom; the earlier model draw
    breached 1/24 at ~0.18 pp. Both are reported as evidence, not a promise —
-   the margin should be re-calibrated as more folds accumulate.
+   the margin should be re-calibrated as more folds accumulate. **Updated in
+   §12:** review feedback correctly noted the Gaussian multiplier assumes
+   normality, so the production default is now the empirical p90 residual
+   quantile (0.39 pp); the Gaussian line is retained only as a comparison.
 
 ## 9. Errors actually hit while building it (for the "code working" record)
 
@@ -146,7 +149,7 @@ one cherry-picked holdout metric.
   fixed loop bounds; the experiment is now a committed, rerunnable script.
 - The analysis script originally hard-coded the split at index 110, which
   crashed on the 64-point smoke dataset → split position is now derived from
-  the actual data, and a test runs the *entire* analysis (8 figures, all
+  the actual data, and a test runs the *entire* analysis (9 figures, all
   tables) on the smoke dataset.
 - Statsmodels emits convergence/non-stationarity warnings on short series →
   wrapped in warning filters and given deterministic fallback models, so CI
@@ -189,10 +192,66 @@ drop in a smoke dataset without touching any code.
 
 ---
 
+## 12. Refinement round: six review points, six experiments
+
+A review pass produced six targeted suggestions. Each was treated as a
+testable question rather than an instruction, and every answer is backed by a
+committed script or table.
+
+1. **Is the 80% band too wide (100% holdout coverage)?** Built a full
+   calibration curve (`calibration_table`, figure 09) at nominal levels
+   50–90%. Inside cross-validation the pooled bands are *exactly* calibrated
+   (empirical = nominal at every level) and the per-fold outside rate
+   averages 20.0% (SD 11.6%) — so 100% coverage on a 24-point holdout is a
+   small-sample over-coverage draw, not systematic over-width. With a truly
+   calibrated 80% band the chance all 24 points land inside is only ~0.5%, so
+   observing over-coverage somewhere among five levels is expected.
+2. **Would intercept/bias correction help the +0.087 pp holdout bias?**
+   Implemented three leakage-safe variants inside the same rolling-origin
+   loop (`bias_correction_study`). Last-12 in-sample correction worsens CV
+   RMSE 0.228 → 0.272 (it chases noise); full-history in-sample correction is
+   neutral because the fitted intercept already absorbs the mean; prior-fold
+   correction collapses to 0.436 because fold-specific bias doesn't transfer
+   across local levels. Conclusion: uncorrected model + safety margin wins;
+   document it rather than ship an untested correction.
+3. **The constant `active_vm_count` wastes the general-case story.** Added an
+   explicit note (report §4.4): if counts varied, persistence stays the
+   baseline and Poisson / negative-binomial count models on lagged counts are
+   the natural upgrade; the pipeline already rounds and clips counts, so such
+   a model needs no structural change.
+4. **Why is ARIMA worst, and would a CSS estimator behave differently?**
+   Discovered that this statsmodels version removed `method='css'` from
+   statespace SARIMAX and moved the innovations/CSS-like estimator to the
+   `ARIMA` class as `method="innovations_mle"`. Tested it explicitly
+   (`ARIMACSS`): it is even less stable here (CV RMSE 0.625, fold SD 0.94),
+   proving the failure is the trend-ARMA specification on a flat noisy series,
+   not the optimizer. The production ARIMA keeps its ETS fallback.
+5. **Make "statistically the same" rigorous.** Added paired t-test
+   (p = 0.59) and Wilcoxon signed-rank (p = 0.85) on the ten per-fold RMSEs
+   (`paired_selection_test`); neither approaches significance, formalizing
+   why the holdout-driven swap would be unjustified.
+6. **The 1.2816σ trigger assumes normality.** Replaced the default capacity
+   trigger with the *empirical* 90th percentile of pooled residuals
+   (0.39 pp headroom), keeping the Gaussian line (0.30 pp) as a comparison
+   column. The residual distribution is mildly skewed (p10 −0.28 vs p90
+   +0.39), so the empirical line needs no distributional assumption and is
+   consistent with the interval methodology.
+
+Two engineering issues surfaced while building this round and were fixed
+properly rather than worked around: (a) direct execution of
+`python analysis/run_analysis.py` failed before an editable install because
+the repo root wasn't on `sys.path` — both analysis scripts now bootstrap their
+own paths, so the documented commands work from a clean checkout; (b) the
+analysis hard-coded the 110-point split position, which would have failed on
+a reviewer's shorter smoke dataset — the split is now derived from the data
+and the full nine-figure analysis is covered by an end-to-end smoke test.
+
+---
+
 ### One-command verification
 
 ```bash
-make install && make test        # 29 tests, incl. smoke-dataset end-to-end
+make install && make test        # 32 tests, incl. smoke-dataset end-to-end
 make predict                     # predictions.csv + CV artifacts
 make analysis                    # every figure and table in reports/
 make experiments                 # rerun the full training-only pre-study

@@ -37,5 +37,8 @@ def test_cli_and_analysis_run_out_of_the_box(tmp_path):
     analysis_main(str(data_dir), str(tmp_path / "reports"))
     figures = list((tmp_path / "reports" / "figures").glob("*.png"))
     tables = list((tmp_path / "reports" / "tables").glob("*"))
-    assert len(figures) == 8
+    assert len(figures) == 9
     assert len(tables) >= 5
+    assert (tmp_path / "reports" / "figures" / "09_calibration.png").exists()
+    assert (tmp_path / "reports" / "tables" / "interval_calibration.csv").exists()
+    assert (tmp_path / "reports" / "tables" / "model_selection_tests.csv").exists()

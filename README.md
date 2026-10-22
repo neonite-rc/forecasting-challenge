@@ -16,7 +16,7 @@ Forked from [`atomityhq/forecasting-challenge`](https://github.com/atomityhq/for
 
 Model selection used only expanding-window rolling-origin CV (10 folds, 240
 out-of-sample residuals) inside the first 110 observations; the final 24
-observations were touched once for reporting. A 21-candidate pre-study
+observations were touched once for reporting. A 22-candidate pre-study
 (`analysis/model_experiments.py`) found nothing better than the regularized
 linear autoregression.
 
@@ -35,13 +35,13 @@ src/cwfc/
   predict.py       # CLI producing predictions.csv
 analysis/
   run_analysis.py      # regenerates every EDA table and figure in reports/
-  model_experiments.py # training-only 21-candidate pre-study (evidence for choices)
-tests/             # 29 tests: targets, leakage, models, intervals, determinism,
+  model_experiments.py # training-only 22-candidate pre-study (evidence for choices)
+tests/             # 32 tests: targets, leakage, models, intervals, determinism,
                    #         smoke-dataset end-to-end CLI + full analysis run
 reports/
   final_report.md  # 4–6 page report (9 required sections)
   tables/          # CV leaderboards, metrics, interval diagnostics (CSV/JSON)
-  figures/         # 8 figures referenced by the report
+  figures/         # 9 figures referenced by the report
 JOURNEY.md         # narrative of the reasoning, iterations and failed approaches
 Makefile           # install / test / predict / analysis / experiments targets
 predictions.csv    # required submission artifact (24 rows, exact contract schema)
@@ -88,9 +88,9 @@ timestamp,active_vm_count,aggregate_cpu_utilization
 Other workflows:
 
 ```bash
-make test          # 29 tests, incl. synthetic smoke-dataset end-to-end run
-make analysis      # all EDA tables and 8 report figures
-make experiments   # rerun the 21-candidate training-only pre-study
+make test          # 32 tests, incl. synthetic smoke-dataset end-to-end run
+make analysis      # all EDA tables and 9 report figures
+make experiments   # rerun the 22-candidate training-only pre-study
 make all           # test + predict + analysis
 ```
 
@@ -115,12 +115,19 @@ repeated runs are byte-for-byte deterministic.
    persistence as the required baseline; sophisticated ETS/ARIMA/boosting
    models lose honestly rather than being excluded.
 6. **Uncertainty from 240 out-of-sample CV residuals:** constant-width 80 %
-   empirical intervals and a one-sided p90 capacity trigger (forecast +
-   ~0.30 pp). Per-step quantiles were tried and rejected as unstable with few
-   folds (documented in `JOURNEY.md`).
+   empirical intervals (verified exactly calibrated inside CV, figure 09) and
+   a one-sided **empirical** p90 capacity trigger (forecast + ~0.39 pp), with
+   the Gaussian 1.28σ line (~0.30 pp) kept only as a comparison because the
+   residuals are mildly skewed. Per-step quantiles were tried and rejected as
+   unstable with few folds (documented in `JOURNEY.md`).
 7. **No holdout target values** are used in any fit, feature, tuning, or
    selection step; tests assert feature rows cannot see their own target, and
-   selection-robustness is reported rather than hidden.
+   selection robustness is reported rather than hidden — the two top Ridge
+   configs are formally indistinguishable by paired t-test (p=0.59) and
+   Wilcoxon (p=0.85), so the CV winner is retained on principle.
+8. **Every reviewer-style refinement is tested, not assumed:** bias-correction
+   candidates, a CSS-like ARIMA estimator, and interval calibration all live
+   in the analysis scripts with their negative results preserved.
 
 ## Dependencies
 

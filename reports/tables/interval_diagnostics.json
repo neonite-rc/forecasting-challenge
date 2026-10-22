@@ -1,6 +1,13 @@
 {
   "interval_80pct_holdout_coverage": 1.0,
-  "capacity_trigger_holdout_breach_rate": 0.0,
-  "mean_capacity_headroom_pp": 0.30412450463991725,
-  "cv_fold_count": 10
+  "capacity_trigger_method": "empirical p90 of pooled CV residuals",
+  "capacity_trigger_holdout_breach_rate_empirical": 0.0,
+  "capacity_trigger_holdout_breach_rate_gaussian": 0.0,
+  "mean_capacity_headroom_pp_empirical": 0.38618943206494727,
+  "mean_capacity_headroom_pp_gaussian": 0.3041130111124861,
+  "fold_outside_rate_80pct_mean": 0.2,
+  "fold_outside_rate_80pct_sd": 0.11587029785896784,
+  "cv_fold_count": 10,
+  "selection_test_paired_t_pvalue": 0.5944540010854108,
+  "selection_test_wilcoxon_pvalue": 0.845703125
 }

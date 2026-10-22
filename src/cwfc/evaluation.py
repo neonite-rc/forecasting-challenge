@@ -160,12 +160,85 @@ def empirical_interval(
 
 
 def capacity_trigger(
-    forecast: np.ndarray, pooled_residuals: np.ndarray, z: float = 1.2816
+    forecast: np.ndarray,
+    pooled_residuals: np.ndarray,
+    method: str = "empirical",
+    alpha: float = 0.90,
 ) -> np.ndarray:
-    """One-sided p90 safety line: forecast + z * pooled residual sigma.
+    """One-sided upper safety line for capacity provisioning.
 
-    ``z=1.2816`` is the 90th normal percentile. Derived only from CV residual
-    scale, so the line is available before any holdout value is observed.
+    Residuals are defined as actual minus forecast, so the upper tail
+    quantile is the headroom that covers ``alpha`` of historical out-of-sample
+    surprises.
+
+    ``method="empirical"`` (default, consistent with the pooled-empirical
+    interval philosophy) adds the empirical alpha-quantile of CV residuals and
+    makes no distributional assumption. ``method="normal"`` adds
+    ``z_alpha * sigma`` and is retained only as a comparison; it under-covers
+    when the residual distribution is skewed.
     """
-    sigma = float(np.std(pooled_residuals, ddof=1))
-    return np.asarray(forecast, dtype=float) + z * sigma
+    forecast = np.asarray(forecast, dtype=float)
+    pooled_residuals = np.asarray(pooled_residuals, dtype=float)
+    if method == "empirical":
+        offset = float(np.quantile(pooled_residuals, alpha))
+    elif method == "normal":
+        from scipy.stats import norm
+
+        sigma = float(np.std(pooled_residuals, ddof=1))
+        offset = float(norm.ppf(alpha) * sigma)
+    else:
+        raise ValueError("method must be 'empirical' or 'normal'")
+    return forecast + offset
+
+
+def calibration_table(
+    pooled_residuals: np.ndarray,
+    nominal_levels: tuple[float, ...] = (0.50, 0.60, 0.70, 0.80, 0.90),
+) -> pd.DataFrame:
+    """Nominal vs empirical coverage of pooled-residual quantile bands.
+
+    The bands and the residuals come from the same pool of out-of-sample CV
+    residuals, so the empirical column is an in-sample-of-the-CV calibration
+    check; the true out-of-sample check is the band's coverage on the holdout,
+    computed separately in the analysis script.
+    """
+    pooled_residuals = np.asarray(pooled_residuals, dtype=float)
+    rows = []
+    for level in nominal_levels:
+        lower_q, upper_q = np.quantile(
+            pooled_residuals, [(1 - level) / 2, 1 - (1 - level) / 2]
+        )
+        inside = (pooled_residuals >= lower_q) & (pooled_residuals <= upper_q)
+        rows.append(
+            {
+                "nominal_coverage": level,
+                "empirical_coverage": float(inside.mean()),
+                "outside_rate": float(1.0 - inside.mean()),
+                "lower_quantile": float(lower_q),
+                "upper_quantile": float(upper_q),
+                "band_width": float(upper_q - lower_q),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def fold_band_breach_rates(
+    folds: list[FoldResult], level: float = 0.80
+) -> dict:
+    """Per-fold fraction of residuals outside the pooled band at ``level``.
+
+    Reveals whether a band's aggregate coverage is uniform across origins or
+    propped up by a few easy folds.
+    """
+    pooled = pooled_cv_residuals(folds)
+    lower_q, upper_q = np.quantile(pooled, [(1 - level) / 2, 1 - (1 - level) / 2])
+    rates = [
+        float(np.mean((f.residuals < lower_q) | (f.residuals > upper_q)))
+        for f in folds
+    ]
+    return {
+        "level": level,
+        "mean_outside_rate": float(np.mean(rates)),
+        "sd_outside_rate": float(np.std(rates, ddof=1)) if len(rates) > 1 else 0.0,
+        "per_fold_outside_rate": rates,
+    }

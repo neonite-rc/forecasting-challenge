@@ -118,6 +118,9 @@ def run_pipeline(data_dir: str | Path) -> PipelineResult:
                 "lower_p10": lower,
                 "upper_p90": upper,
                 "capacity_upper_p90": capacity_trigger(forecast, pooled),
+                "capacity_upper_p90_normal": capacity_trigger(
+                    forecast, pooled, method="normal"
+                ),
             }
         )
         step_diagnostics = residual_intervals(folds, HORIZON)

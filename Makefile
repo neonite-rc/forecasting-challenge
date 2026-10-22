@@ -8,7 +8,7 @@ DATA ?= challenge_data
 
 help:
 	@echo "make install    - install the package with dev dependencies"
-	@echo "make test       - run the full pytest suite (29 tests)"
+	@echo "make test       - run the full pytest suite (32 tests)"
 	@echo "make predict    - regenerate predictions.csv and CV artifacts"
 	@echo "make analysis   - regenerate all EDA tables and report figures"
 	@echo "make experiments - rerun the training-only model pre-study"

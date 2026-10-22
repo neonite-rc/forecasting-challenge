@@ -13,7 +13,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+
+# Allow `python analysis/run_analysis.py` from a clean checkout even before an
+# editable install: make the repo root and the src layout importable.
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+for _path in (_REPO_ROOT, _REPO_ROOT / "src"):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 
 import matplotlib
 
@@ -31,9 +39,15 @@ from cwfc.data import (
     load_readings,
     split_train_holdout,
 )
-from cwfc.evaluation import cross_validate
+from cwfc.evaluation import (
+    calibration_table,
+    cross_validate,
+    fold_band_breach_rates,
+)
 from cwfc.models import build_model
 from cwfc.pipeline import _cv_window, run_pipeline
+
+from analysis.model_experiments import bias_correction_study, paired_selection_test
 
 plt.rcParams.update({"figure.dpi": 110, "savefig.dpi": 130, "font.size": 9})
 
@@ -123,6 +137,40 @@ def main(data_dir: str, out_dir: str = "reports") -> None:
         ((actual >= intervals["lower_p10"]) & (actual <= intervals["upper_p90"])).mean()
     )
     capacity_breaches = float((actual > intervals["capacity_upper_p90"]).mean())
+    capacity_breaches_normal = float(
+        (actual > intervals["capacity_upper_p90_normal"]).mean()
+    )
+
+    # --- refinement 1: interval calibration across nominal levels ----------
+    pooled_residuals = np.concatenate([f.residuals for f in folds])
+    calibration = calibration_table(pooled_residuals)
+    holdout_coverage = []
+    for level in calibration["nominal_coverage"]:
+        lo_q, hi_q = calibration.loc[
+            calibration["nominal_coverage"] == level,
+            ["lower_quantile", "upper_quantile"],
+        ].iloc[0]
+        holdout_coverage.append(
+            float(np.mean((actual >= util.forecast + lo_q) & (actual <= util.forecast + hi_q)))
+        )
+    calibration["holdout_coverage"] = holdout_coverage
+    calibration.to_csv(tables / "interval_calibration.csv", index=False)
+
+    breach_rates = fold_band_breach_rates(folds, level=0.80)
+    (tables / "fold_band_breach_rates.json").write_text(
+        json.dumps(breach_rates, indent=2)
+    )
+
+    # --- refinement 2 + 5: bias correction and paired significance tests ----
+    bias_table = bias_correction_study(history, cv_min_train, cv_step)
+    pd.DataFrame(
+        [{"variant": k, "cv_rmse": v[0], "fold_sd": v[1]} for k, v in bias_table.items()]
+    ).to_csv(tables / "bias_correction_study.csv", index=False)
+
+    selection_tests = paired_selection_test(history, cv_min_train, cv_step)
+    pd.DataFrame([selection_tests]).to_csv(
+        tables / "model_selection_tests.csv", index=False
+    )
 
     err_by_step = pd.DataFrame(
         {
@@ -230,25 +278,50 @@ def main(data_dir: str, out_dir: str = "reports") -> None:
     ax.legend(fontsize=8)
     fig.tight_layout(); fig.savefig(figures / "07_error_by_step.png"); plt.close(fig)
 
-    # 8. capacity policy illustration
+    # 8. capacity policy illustration (empirical vs Gaussian trigger)
     headroom = intervals["capacity_upper_p90"] - util.forecast
     fig, ax = plt.subplots(figsize=(8, 3.2))
     ax.plot(ht, actual, color="#1f4e79", lw=1.2, label="actual utilization")
     ax.plot(ht, util.forecast, color="#2e7d32", lw=1.3, label="forecast")
     ax.plot(ht, intervals["capacity_upper_p90"], color="#c0392b", ls="--", lw=1.2,
-            label="one-sided p90 capacity trigger")
+            label="p90 trigger, empirical quantile")
+    ax.plot(ht, intervals["capacity_upper_p90_normal"], color="#8e44ad", ls=":", lw=1.2,
+            label="p90 trigger, 1.28 sigma (Gaussian)")
     ax.fill_between(ht, util.forecast, intervals["capacity_upper_p90"],
                     color="#c0392b", alpha=0.1)
     ax.set_xlabel("minutes since trace start"); ax.set_ylabel("CPU utilization (%)")
-    ax.set_title(f"Capacity policy: provision to p90 trigger (mean headroom {headroom.mean():.2f} pp)")
+    ax.set_title(f"Capacity policy (mean empirical headroom {headroom.mean():.2f} pp)")
     ax.legend(fontsize=8)
     fig.tight_layout(); fig.savefig(figures / "08_capacity_policy.png"); plt.close(fig)
 
+    # 9. calibration curve: nominal vs empirical coverage
+    fig, ax = plt.subplots(figsize=(6, 5))
+    lims = (0.4, 1.0)
+    ax.plot(lims, lims, color="grey", ls="--", lw=1, label="perfect calibration")
+    ax.plot(calibration["nominal_coverage"], calibration["empirical_coverage"],
+            marker="o", color="#1f4e79", label="CV residual pool (240 residuals)")
+    ax.plot(calibration["nominal_coverage"], calibration["holdout_coverage"],
+            marker="s", color="#c0392b", label="24-point holdout realization")
+    ax.set_xlim(lims); ax.set_ylim(lims)
+    ax.set_xlabel("nominal coverage"); ax.set_ylabel("empirical coverage")
+    ax.set_title("Prediction-interval calibration")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(figures / "09_calibration.png"); plt.close(fig)
+
     diagnostics = {
         "interval_80pct_holdout_coverage": interval_coverage,
-        "capacity_trigger_holdout_breach_rate": capacity_breaches,
-        "mean_capacity_headroom_pp": float(headroom.mean()),
+        "capacity_trigger_method": "empirical p90 of pooled CV residuals",
+        "capacity_trigger_holdout_breach_rate_empirical": capacity_breaches,
+        "capacity_trigger_holdout_breach_rate_gaussian": capacity_breaches_normal,
+        "mean_capacity_headroom_pp_empirical": float(headroom.mean()),
+        "mean_capacity_headroom_pp_gaussian": float(
+            (intervals["capacity_upper_p90_normal"] - util.forecast).mean()
+        ),
+        "fold_outside_rate_80pct_mean": breach_rates["mean_outside_rate"],
+        "fold_outside_rate_80pct_sd": breach_rates["sd_outside_rate"],
         "cv_fold_count": len(folds),
+        "selection_test_paired_t_pvalue": selection_tests["paired_t_pvalue"],
+        "selection_test_wilcoxon_pvalue": selection_tests["wilcoxon_pvalue"],
     }
     (tables / "interval_diagnostics.json").write_text(json.dumps(diagnostics, indent=2))
     print(f"analysis artifacts written to {out_dir}/")

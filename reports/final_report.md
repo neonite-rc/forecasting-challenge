@@ -3,7 +3,7 @@
 **Dataset:** Microsoft Azure Public Dataset V2, curated `data-v1` challenge release
 **Series:** 134 five-minute observations (~11.1 hours) aggregated from 10,000 VMs / 1,340,000 CPU readings
 **Holdout:** final 24 observations (2 hours), never used for fitting, feature selection, tuning, or model selection
-**Selected model:** recursive autoregressive Ridge regression on lags 1–2, `alpha = 1` (`ridge_ar`), selected by a 21-candidate pre-study and 10-fold rolling-origin CV on the training window
+**Selected model:** recursive autoregressive Ridge regression on lags 1–2, `alpha = 1` (`ridge_ar`), selected by a 22-candidate pre-study and 10-fold rolling-origin CV on the training window
 **Decision journal:** see [`JOURNEY.md`](../JOURNEY.md) for the full rationale, failed approaches and selection-robustness analysis
 
 ---
@@ -12,8 +12,8 @@
 
 - The curated panel is **complete and regular**: 10,000 VMs × 134 timestamps on an exact 300-second grid, with zero missing cells, zero duplicate `(vm, timestamp)` rows, and no churn inside the window. The `active_vm_count` target is therefore the constant 10,000 and is forecast perfectly with zero error.
 - Aggregate CPU utilization is a **low-level, low-volatility, short-memory series**: mean **9.39 %**, standard deviation **0.195 pp** (coefficient of variation **2.08 %**), range 8.98–9.91 %. Aggregation over 10,000 VMs smooths away most VM-level noise (the median per-VM temporal CV is 28.7 %, versus 2.1 % for the aggregate).
-- A deliberately simple **lag-1/2 Ridge autoregression** wins leakage-safe rolling-origin validation across three different CV designs (best 10-fold CV RMSE 0.228 vs. 0.283 for persistence). On the untouched 24-step holdout it achieves **MAE 0.124 pp, RMSE 0.149 pp, sMAPE 1.34 %** — a **15.5 % MAE reduction versus persistence**. A wider 21-candidate pre-study (gradient boosting, ElasticNet, ETS, ARIMA, SES, drift, differenced AR, ensembles) found nothing better; see §4 and `JOURNEY.md`.
-- Residual-scale analysis yields a concrete operational rule: provision to **forecast + 0.30 pp** (a one-sided p90 safety margin from 240 CV residuals). This line was breached by **0 of 24** holdout periods while adding ~3 % relative headroom.
+- A deliberately simple **lag-1/2 Ridge autoregression** wins leakage-safe rolling-origin validation across three different CV designs (best 10-fold CV RMSE 0.228 vs. 0.283 for persistence). On the untouched 24-step holdout it achieves **MAE 0.124 pp, RMSE 0.149 pp, sMAPE 1.34 %** — a **15.5 % MAE reduction versus persistence**. A wider 22-candidate pre-study (gradient boosting, ElasticNet, ETS, ARIMA, SES, drift, differenced AR, ensembles) found nothing better; see §4 and `JOURNEY.md`.
+- Residual-scale analysis yields a concrete operational rule: provision to **forecast + 0.39 pp**, the empirical 90th percentile of 240 out-of-sample CV residuals (a Gaussian 1.28σ line would be 0.30 pp and is kept only as a comparison). The empirical line was breached by **0 of 24** holdout periods while adding ~4 % relative headroom, and the underlying bands are verified to be exactly calibrated inside cross-validation.
 - The biggest operational opportunity is *not* aggregate headroom but **right-sizing**: 49 % of all VM readings are below 5 % CPU and the median VM averages only 5.48 %.
 
 ## 2. Data understanding and preprocessing
@@ -77,9 +77,9 @@ Interactive VMs run ~39 % hotter than delay-insensitive ones; the small Unknown 
 
 ## 4. Forecasting approach
 
-### 4.1 The pre-study: 21 candidates, training data only
+### 4.1 The pre-study: 22 candidates, training data only
 
-Before fixing the production registry, a broad pre-study (`analysis/model_experiments.py`) scored 21 candidates under three rolling-origin designs, never touching the holdout. Families tested: persistence, moving averages, seasonal-naïve, simple/damped exponential smoothing, drift, ARIMA(1,0,1), Ridge AR over lag sets (1) through (1,2,3,6) and four regularization strengths, ElasticNet, differenced AR, histogram gradient boosting, and three equal-weight ensembles. Findings:
+Before fixing the production registry, a broad pre-study (`analysis/model_experiments.py`) scored 22 candidates under three rolling-origin designs, never touching the holdout. Families tested: persistence, moving averages, seasonal-naïve, simple/damped exponential smoothing, drift, ARIMA(1,0,1), Ridge AR over lag sets (1) through (1,2,3,6) and four regularization strengths, ElasticNet, differenced AR, histogram gradient boosting, and three equal-weight ensembles. Findings:
 
 - **Regularized linear AR wins decisively** (best CV RMSE 0.228 vs. 0.283 persistence).
 - Gradient boosting overfits ~50 supervised rows per fold (0.268); ElasticNet's sparsity adds nothing; ensembles are dragged down by weaker, highly correlated members (0.239+); differenced and drift models amplify noise; ARIMA is the worst family (0.442) due to fragile MLE and trend overshoot on 110 points.
@@ -93,9 +93,9 @@ Before fixing the production registry, a broad pre-study (`analysis/model_experi
 
 Features for predicting position `t` use only values observed before `t`. Deterministic trend and cyclical features were prototyped and **rejected by CV**: with relative (not wall-clock) timestamps and under 12 hours of data they have no defensible calendar interpretation, and in recursive forecasting they drift as predictions feed back over 24 steps — the rich-feature version scored CV RMSE 0.49–1.22 versus ~0.23 for lag-only. Autocorrelation being effectively zero beyond a handful of lags is what makes the two-lag model sufficient.
 
-### 4.4 The constant target
+### 4.4 The constant target, and the general case it stands in for
 
-For `active_vm_count`, every candidate produces identical zero-error forecasts; persistence is selected by the same CV machinery (all models tie), and the integer count is emitted unchanged. No modeling effort is spent where no signal exists.
+For `active_vm_count`, every candidate produces identical zero-error forecasts; persistence is selected by the same CV machinery (all models tie), and the integer count is emitted unchanged. No modeling effort is spent where no signal exists — but the machinery is built for the non-constant case: if counts varied across timestamps, persistence would remain the required baseline and the natural upgrade would be a count-data model (Poisson or, given likely over-dispersion in arrivals/departures, negative-binomial regression on lagged counts and churn features), evaluated with the same rolling-origin scheme. The `active_vm_count` path already rounds predictions to non-negative integers and clips them, so such a model would slot into the registry without pipeline changes.
 
 ## 5. Validation methodology
 
@@ -130,26 +130,58 @@ For `active_vm_count`, every candidate produces identical zero-error forecasts; 
 | Mean error bias (pp, + = over-forecast) | +0.087 | — |
 | `active_vm_count` MAE / RMSE | 0.0 / 0.0 | 0.0 / 0.0 |
 
-### 6.3 Model-selection uncertainty, stated honestly
+### 6.3 Model-selection uncertainty, now tested formally
 
 A neighboring Ridge configuration (lags 1–3, α = 10) wins exactly 5 of the 10
-paired CV folds, with a mean RMSE gap of just 0.003 — the two are
-statistically equivalent, and on this *single* holdout draw that alternative
-scores MAE 0.101 versus 0.124. We do **not** switch to it: re-selecting on
-holdout numbers is the leakage the protocol forbids, and a 24-point sample
-cannot distinguish two models that tie in ten folds. The pipeline therefore
-commits to the rigorous CV winner and treats holdout differences of this size
-as selection noise. Full fold-by-fold evidence is in `JOURNEY.md` §7.
+paired CV folds, with a mean RMSE gap of just 0.0032. Rather than rely on
+intuition, two paired tests on the per-fold RMSEs quantify this:
 
-### 6.4 Uncertainty and the capacity trigger
+| Test | Statistic | p-value |
+|---|---:|---:|
+| Paired t-test | t on 9 d.f. | **0.59** |
+| Wilcoxon signed-rank | | **0.85** |
 
-Pooling the 240 CV residuals gives σ = 0.24 pp. A constant-width **80 % empirical interval** (10th/90th pooled residual quantiles) covers **100 %** of holdout actuals (24/24) on this draw. A one-sided **p90 safety line = forecast + 1.2816σ ≈ forecast + 0.30 pp** is breached in **0 of 24** holdout periods — see `reports/figures/08_capacity_policy.png`. Earlier validation with a coarser 3-fold design showed a 1/24 breach, so the margin is deliberately conservative rather than tuned to this holdout.
+Neither approaches significance: the configurations are statistically
+indistinguishable, and on this *single* holdout draw the alternative scores
+MAE 0.101 versus 0.124 purely as one realization of their shared variance.
+We do **not** switch to it: re-selecting on holdout numbers is the leakage
+the protocol forbids. The pipeline commits to the CV winner (best average rank
+across all three fold designs) and treats holdout differences of this size as
+selection noise. Fold-by-fold evidence and the test code are in
+`analysis/model_experiments.py::paired_selection_test` and `JOURNEY.md` §7.
+
+### 6.4 Uncertainty, calibration, and the capacity trigger
+
+Pooling the 240 CV residuals yields an approximately centered but mildly
+skewed distribution (10th percentile −0.28 pp, 90th +0.39 pp).
+
+**Interval calibration (`reports/tables/interval_calibration.csv`, figure 09).**
+Bands built from pooled-residual quantiles are *exactly* calibrated inside
+cross-validation — empirical coverage equals the nominal level at every level
+from 50 % to 90 % — and the per-fold outside rate for the 80 % band averages
+20.0 % (SD 11.6 %, range 4–38 %), so coverage is spread across origins rather
+than propped up by easy folds. Against the 24-point holdout, observed coverage
+is 67 % / 79 % / 88 % / 100 % / 100 % at nominal 50/60/70/80/90 %. The 100 %
+coverage at the two widest bands is therefore a small-sample over-coverage
+realization (with a truly calibrated 80 % band, P(all 24 inside) ≈ 0.005, so
+some lucky over-coverage is expected across the five levels examined), not
+evidence of systematic over-width: the in-CV calibration sits on the diagonal.
+
+**Capacity trigger.** Operational risk is one-sided, so the production safety
+line uses the **empirical 90th percentile of the pooled residuals** directly —
+forecast + 0.39 pp — consistent with the empirical-interval philosophy and
+robust to the residual skew, rather than assuming Gaussianity. The Gaussian
+alternative (1.2816σ = +0.30 pp) is retained as a comparison column; on these
+data both are breached 0/24 times on the holdout, but the empirical line would
+be preferred under skew because it needs no normality assumption
+(`reports/figures/08_capacity_policy.png`).
 
 ## 7. Error and failure analysis
 
 - **Abrupt innovations are irreducible.** The holdout's series-wide minimum (8.98 %) arrives one step after the origin with no precursor; no model using only past values can forecast a one-step shock. Errors are largest in early holdout steps and shrink as the recursive model tracks the new level.
 - **No horizon degradation.** Mean absolute CV residuals stay bounded across steps 1–24 (`reports/tables/error_by_horizon_step.csv`); shrinkage keeps recursive error accumulation under control, which is precisely why regularized Ridge beats unconstrained ARIMA/ETS here.
-- **Level-shift risk.** The holdout mean sits 0.145 pp below the training mean, producing the model's +0.087 pp upward bias. A sustained regime shift is tracked only after a few observations once the rolling forecast refreshes — arguing for frequent re-fitting and the safety margin, not longer static horizons.
+- **Level-shift risk and the bias-correction experiment.** The holdout mean sits 0.145 pp below the training mean, producing the model's +0.087 pp upward bias. Rather than hand-wave this away, three intercept corrections were tested *as additional CV candidates* (`reports/tables/bias_correction_study.csv`): subtracting the mean in-sample residual over the last 12 points (CV RMSE 0.272 vs 0.228 uncorrected — worse), subtracting the full-history in-sample residual (neutral, since the fitted intercept already absorbs it), and subtracting residuals from prior CV folds (0.436 — much worse, because folds cover different local levels and their bias does not transfer). Correction over-reacts to local noise, so the uncorrected model plus the safety margin is retained; the right mitigation for a genuine regime shift is frequent re-fitting, which is already the production cadence.
+- **Why ARIMA fails — and what an alternative estimator shows.** The statespace ARMA(1,1) is the worst family (10-fold CV RMSE 0.442). On short series statsmodels' Kalman-filter MLE frequently hits non-stationarity/convergence warnings and its trend term overshoots; the implementation already falls back to damped ETS when MLE fails. A classical conditional-sum-of-squares fit is often more stable on short samples, so the pre-study also fits the equivalent non-Kalman estimator exposed in modern statsmodels (`ARIMA.fit(method="innovations_mle")`, the innovations/CSS-like likelihood): it is even worse here (RMSE 0.625, fold SD 0.94 — unstable across origins), confirming the problem is the trend-ARMA specification on a near-flat, noisy series rather than the optimizer. That is why ARIMA stays in the registry as an honest benchmark but is never selected.
 - **Peak vs. off-peak.** Peak-tercile MAE (0.064 pp) is actually lower than off-peak MAE (0.154 pp) on this holdout, because the early-holdout trough dominates the errors; segment-level volatility (Unknown category, σ 0.64 pp) remains where peak-specific risk concentrates.
 - **Why the sophisticated models lost:** seasonal-naïve assumes an hourly cycle the ACF does not support; ETS/ARIMA extrapolate a noisy local trend and overshoot; gradient boosting cannot extrapolate and overfits ~50 training rows. The Ridge AR model expresses exactly the short-memory structure the ACF shows.
 
@@ -158,7 +190,7 @@ Pooling the 240 CV residuals gives σ = 0.24 pp. A constant-width **80 % empiric
 **Policy (refreshed every 5 minutes, rolling 2-hour horizon):**
 
 1. **Baseline capacity** = point forecast of aggregate utilization.
-2. **Provisioned capacity** = forecast **+ 0.30 pp** one-sided p90 margin (≈ 3.2 % relative buffer on a 9.4 % mean), calibrated from 240 CV residuals. On this holdout the rule absorbs all 24 periods.
+2. **Provisioned capacity** = forecast **+ 0.39 pp**, the empirical 90th percentile of 240 pooled CV residuals (≈ 4.1 % relative buffer on a 9.4 % mean). The empirical quantile is preferred to a Gaussian 1.28σ line (+0.30 pp) because the residuals are mildly skewed and no normality assumption is needed. On this holdout both rules absorb all 24 periods; the Gaussian line is retained in the artifacts as a comparison, not the default.
 3. **Autoscale trigger:** add capacity when the upper line approaches a resource ceiling (e.g. forecasted utilization > 70 % of a fleet-wide limit); never scale down below the point forecast within the horizon.
 4. **Segment rule:** monitor Interactive VMs (11.5 % mean, hotter) and the volatile Unknown category on separate dashboards; apply a wider margin (their residual σ is ~2–3× the fleet aggregate) if they are scheduled onto dedicated pools.
 5. **Right-sizing program:** independently of forecasting, audit the 49 % of VM-intervals under 5 % CPU for downsizing or consolidation — the expected savings dwarf the ~3 % aggregate safety buffer.
@@ -178,4 +210,4 @@ Pooling the 240 CV residuals gives σ = 0.24 pp. A constant-width **80 % empiric
 
 ### Reproducibility
 
-`python -m cwfc.predict --data challenge_data --output predictions.csv --artifacts-dir reports/tables` regenerates the submission and CV artifacts; `python analysis/run_analysis.py --data challenge_data` regenerates every table and figure; `python analysis/model_experiments.py --data challenge_data` reruns the 21-candidate pre-study; `pytest -q` runs 29 tests including leakage-safe feature checks, determinism, and a smoke-dataset end-to-end run of both the CLI and the full analysis. Or simply `make all`.
+`python -m cwfc.predict --data challenge_data --output predictions.csv --artifacts-dir reports/tables` regenerates the submission and CV artifacts; `python analysis/run_analysis.py --data challenge_data` regenerates every table and figure; `python analysis/model_experiments.py --data challenge_data` reruns the 22-candidate pre-study; `pytest -q` runs 32 tests including leakage-safe feature checks, determinism, and a smoke-dataset end-to-end run of both the CLI and the full analysis. Or simply `make all`.
