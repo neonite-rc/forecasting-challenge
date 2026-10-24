@@ -1,20 +1,36 @@
 # Notice — License Scope
 
 This repository combines upstream open-source starter material with an
-original, restrictively licensed solution. Two licenses therefore coexist:
+original work released under the PolyForm Noncommercial License 1.0.0. Two
+licenses therefore coexist:
 
 | Material | License | File |
 |---|---|---|
-| Original solution work (listed below) | Restricted proprietary, all rights reserved | [`LICENSE`](LICENSE) |
+| Original solution work (listed below) | PolyForm Noncommercial 1.0.0 | [`LICENSE`](LICENSE) |
 | Upstream starter code and assignment documents from `atomityhq/forecasting-challenge` | MIT | [`LICENSE-MIT`](LICENSE-MIT) |
 
 The MIT license cannot be revoked on upstream material, so those files remain
-under MIT regardless of the proprietary notice applied to the new work.
+under MIT regardless of the license applied to the new work.
 
-## Covered by the restrictive LICENSE (proprietary)
+## What PolyForm Noncommercial 1.0.0 permits and forbids
+
+Permitted without further permission: viewing, cloning, running, reviewing,
+testing, research and personal study, making noncommercial changes, and
+noncommercial redistribution with this notice retained. The top-level
+LICENSE additionally grants the challenge recruitment team an explicit,
+narrow license to run and evaluate the submission for hiring assessment.
+
+Not permitted without prior written authorization: any **commercial use**,
+including operating the software (or a derivative) in a commercial
+production environment, incorporating it into a proprietary product or
+service, or commercial redistribution or sublicensing. PolyForm
+Noncommercial is source-available, not OSI open source, because an OSI
+license may not forbid commercial use.
+
+## Covered by the PolyForm Noncommercial LICENSE
 
 - `src/cwfc/`: `config.py`, `data.py`, `features.py`, `models.py`,
-  `evaluation.py`, `pipeline.py`, `predict.py`
+  `evaluation.py`, `pipeline.py`, `predict.py`, `_about.py`
 - Root: `predict.py`, `conftest.py`, `Makefile`, `requirements.txt`,
   `JOURNEY.md`
 - `analysis/` (all programs)
@@ -24,10 +40,6 @@ under MIT regardless of the proprietary notice applied to the new work.
 - `reports/final_report.md` and all generated tables and figures under
   `reports/`
 - `predictions.csv` and `docs/`
-
-Under the restrictive LICENSE, commercial use, derivative works,
-redistribution, and production deployment are not granted; a limited license
-for evaluation and non-commercial study is provided in Section 1 of `LICENSE`.
 
 ## Covered by LICENSE-MIT (upstream, MIT)
 
@@ -46,5 +58,4 @@ GitHub Release and is not committed to this repository.
 
 ---
 
-Copyright (c) 2026 Biswaketan (GitHub: neonite-rc). All rights reserved
-except where an MIT notice applies.
+Required Notice: Copyright (c) 2026 Biswaketan (https://biswaketan.in)

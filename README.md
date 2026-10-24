@@ -157,9 +157,15 @@ numpy, pandas, scikit-learn, statsmodels (runtime); pytest, matplotlib
 
 ## License
 
-The original solution work is released under a **restricted proprietary
-license: no commercial use, derivative works, redistribution, or production
-deployment rights are granted**; only evaluation and non-commercial study are
-permitted — see [`LICENSE`](LICENSE). Upstream starter materials remain under
-the MIT license in [`LICENSE-MIT`](LICENSE-MIT); the exact scope of each is
-documented in [`NOTICE.md`](NOTICE.md).
+The original solution work is released under the **PolyForm Noncommercial
+License 1.0.0** ([`LICENSE`](LICENSE)): review, testing, research,
+noncommercial modification and noncommercial sharing are permitted, while
+**commercial use — including commercial production deployment, incorporation
+into a proprietary product, or commercial redistribution — is not granted**.
+The LICENSE additionally authorizes the challenge recruitment team to run and
+evaluate this submission. Upstream starter materials remain under the MIT
+license in [`LICENSE-MIT`](LICENSE-MIT); the exact scope of each is documented
+in [`NOTICE.md`](NOTICE.md). Provenance and enforcement notes (build tag,
+hash manifest, takedown workflow) live in
+[`docs/IP_PROTECTION.md`](docs/IP_PROTECTION.md); print the attribution banner
+with `python -m cwfc.predict --about`.

@@ -1,77 +1,84 @@
-COPYRIGHT AND RESTRICTED USE LICENSE
-=====================================
+Required Notice: Copyright (c) 2026 Biswaketan (https://biswaketan.in)
 
-Copyright (c) 2026 Biswaketan (GitHub: neonite-rc). All rights reserved.
+Additional Licensor Grant — Candidate Evaluation: In addition to the
+permitted purposes below, the licensor grants the designated recruitment
+reviewers of the challenge organizer permission to run and evaluate the
+software solely to assess this take-home submission. This grant does not
+extend to production deployment, redistribution, sublicensing, or any
+commercial purpose, all of which remain reserved to the licensor.
 
-The solution work in this repository (the "Work") — including, without
-limitation, the forecasting pipeline and modules under src/cwfc/ newly
-authored for this submission, the analysis/ programs, the test suite,
-reports/ (excluding upstream contract documents), JOURNEY.md, and the
-generated predictions.csv — is the proprietary and copyrighted work of the
-copyright holder. The scope of this license is documented in NOTICE.md. The
-upstream starter materials remain licensed under LICENSE-MIT.
+---
 
-1. GRANT OF LIMITED EVALUATION LICENSE
+# PolyForm Noncommercial License 1.0.0
 
-Subject to your compliance with the terms below, the copyright holder grants
-you a personal, non-exclusive, non-transferable, non-sublicensable, revocable
-license to view, clone, install, and execute the Work solely for the purposes
-of:
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
 
-  (a) evaluating, reviewing, and assessing the Work as a take-home challenge
-      submission, including reproducing its stated results; and
-  (b) non-commercial academic or educational study.
+## Acceptance
 
-2. RIGHTS EXPRESSLY NOT GRANTED
+In order to get any license under these terms, you must agree to them as both strict obligations and conditions to all your licenses.
 
-No other rights are granted. Without the prior written permission of the
-copyright holder, you may NOT:
+## Copyright License
 
-  (a) use the Work, in whole or in part, for any commercial purpose, including
-      commercial evaluation, consulting, or incorporation into a commercial
-      product or service;
+The licensor grants you a copyright license for the software to do everything you might do with the software that would otherwise infringe the licensor's copyright in it for any permitted purpose.  However, you may only distribute the software according to [Distribution License](#distribution-license) and make changes or new works based on the software according to [Changes and New Works License](#changes-and-new-works-license).
 
-  (b) create, reproduce, or distribute derivative works based on the Work,
-      including modifications, adaptations, ports, or translations, other than
-      private, non-shared changes made solely to run the Work for the limited
-      purposes in Section 1;
+## Distribution License
 
-  (c) deploy, host, operate, or embed the Work, or any substantial part of it,
-      in any production environment, production service, or live operational
-      system, whether internal or customer-facing;
+The licensor grants you an additional copyright license to distribute copies of the software.  Your license to distribute covers distributing the software with changes and new works permitted by [Changes and New Works License](#changes-and-new-works-license).
 
-  (d) redistribute, publish, sublicense, sell, rent, lease, or otherwise make
-      the Work available to any third party, with or without consideration;
+## Notices
 
-  (e) remove, alter, or obscure any copyright, license, or proprietary notices.
+You must ensure that anyone who gets a copy of any part of the software from you also gets a copy of these terms or the URL for them above, as well as copies of any plain-text lines beginning with `Required Notice:` that the licensor provided with the software.  For example:
 
-3. OWNERSHIP
+> Required Notice: Copyright Yoyodyne, Inc. (http://example.com)
 
-The Work is licensed, not sold. The copyright holder retains all right, title,
-and interest in and to the Work, including all intellectual property rights.
-Any feedback, suggestions, or contributions provided to the copyright holder
-may be used without obligation.
+## Changes and New Works License
 
-4. NO WARRANTY AND LIMITATION OF LIABILITY
+The licensor grants you an additional copyright license to make changes and new works based on the software for any permitted purpose.
 
-THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT
-HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
-ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
-WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
+## Patent License
 
-5. TERMINATION
+The licensor grants you a patent license for the software that covers patent claims the licensor can license, or becomes able to license, that you would infringe by using the software.
 
-This license terminates automatically upon any breach of its terms. Upon
-termination you must destroy all copies of the Work in your possession or
-control. Sections 3, 4, and this Section 5 survive termination.
+## Noncommercial Purposes
 
-6. PERMISSION REQUESTS
+Any noncommercial purpose is a permitted purpose.
 
-Requests for any use not covered by Section 1 — including commercial use,
-derivative works, redistribution, or production deployment — must be made in
-writing to the copyright holder via the GitHub account neonite-rc.
+## Personal Uses
 
-For the scope of the upstream MIT-licensed materials, see LICENSE-MIT and
-NOTICE.md.
+Personal use for research, experiment, and testing for the benefit of public knowledge, personal study, private entertainment, hobby projects, amateur pursuits, or religious observance, without any anticipated commercial application, is use for a permitted purpose.
+
+## Noncommercial Organizations
+
+Use by any charitable organization, educational institution, public research organization, public safety or health organization, environmental protection organization, or government institution is use for a permitted purpose regardless of the source of funding or obligations resulting from the funding.
+
+## Fair Use
+
+You may have "fair use" rights for the software under the law. These terms do not limit them.
+
+## No Other Rights
+
+These terms do not allow you to sublicense or transfer any of your licenses to anyone else, or prevent the licensor from granting licenses to anyone else.  These terms do not imply any other licenses.
+
+## Patent Defense
+
+If you make any written claim that the software infringes or contributes to infringement of any patent, your patent license for the software granted under these terms ends immediately. If your company makes such a claim, your patent license ends immediately for work on behalf of your company.
+
+## Violations
+
+The first time you are notified in writing that you have violated any of these terms, or done anything with the software not covered by your licenses, your licenses can nonetheless continue if you come into full compliance with these terms, and take practical steps to correct past violations, within 32 days of receiving notice.  Otherwise, all your licenses end immediately.
+
+## No Liability
+
+***As far as the law allows, the software comes as is, without any warranty or condition, and the licensor will not be liable to you for any damages arising out of these terms or the use or nature of the software, under any kind of legal claim.***
+
+## Definitions
+
+The **licensor** is the individual or entity offering these terms, and the **software** is the software the licensor makes available under these terms.
+
+**You** refers to the individual or entity agreeing to these terms.
+
+**Your company** is any legal entity, sole proprietorship, or other kind of organization that you work for, plus all organizations that have control over, are under the control of, or are under common control with that organization.  **Control** means ownership of substantially all the assets of an entity, or the power to direct its management and policies by vote, contract, or otherwise.  Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the software under these terms.
+
+**Use** means anything you do with the software requiring one of your licenses.

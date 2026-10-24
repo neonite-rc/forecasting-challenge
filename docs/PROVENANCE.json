@@ -1,0 +1,65 @@
+{
+  "build_tag": "CWFC-NC1-7Q2M9X4D",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "copyright": "Copyright (c) 2026 Biswaketan (https://biswaketan.in)",
+  "generated_utc": "2026-10-24T04:12:07+00:00",
+  "git_commit": "71aac7722e4eba39684e7b173eac22ed51b2a33f",
+  "required_markers": [
+    "PolyForm-Noncommercial-1.0.0",
+    "CWFC-NC1-7Q2M9X4D"
+  ],
+  "files": {
+    "src/cwfc/_about.py": {
+      "sha256": "afb80fb92a7d5f6fb914e487c7ca3fda8a5350e73352ef847abc4c89e384ca17",
+      "markers_present": true
+    },
+    "src/cwfc/config.py": {
+      "sha256": "a405922759fe87002b93761d86aaba0985be7f57ceb358e95d498fe2d5f1ff18",
+      "markers_present": true
+    },
+    "src/cwfc/data.py": {
+      "sha256": "809ad588251f360c3a9fd8495e2d913f052c8b89d6b73de8301b7a4b4492e21a",
+      "markers_present": true
+    },
+    "src/cwfc/features.py": {
+      "sha256": "bdae7c7799679c00e7eddfd53632951cee5580e12e966487ed4a16052fafa25f",
+      "markers_present": true
+    },
+    "src/cwfc/models.py": {
+      "sha256": "9595fd0213b902d342e3fc540c60d8b9dc6b83e38659f48f986f519db7b57bca",
+      "markers_present": true
+    },
+    "src/cwfc/evaluation.py": {
+      "sha256": "61158c1001c6c93265ba920c7be71fcc84225d3726c759b376eb97f3dc351294",
+      "markers_present": true
+    },
+    "src/cwfc/pipeline.py": {
+      "sha256": "9b36d547719d1eed1544a8ad2081d302e7b498a27f9eabeaff4c33341aaf0f98",
+      "markers_present": true
+    },
+    "src/cwfc/predict.py": {
+      "sha256": "e10e38d4860157ba2f9b5e39f120599a0268daf903073825ed001e34d6cd8e22",
+      "markers_present": true
+    },
+    "analysis/__init__.py": {
+      "sha256": "049ac4e203a18f1cbd54f79b64fa7d3e2030aa2e1e31a25a741b52431dc12700",
+      "markers_present": true
+    },
+    "analysis/model_experiments.py": {
+      "sha256": "a9752384c9a1cac72c6e0b39d912ccc73c6f7894bf6db50e1960583252cea7df",
+      "markers_present": true
+    },
+    "analysis/run_analysis.py": {
+      "sha256": "5612fbb576c17d20b0f18a464987fff52fb3b9077f6e1cddce6574ba4d744360",
+      "markers_present": true
+    },
+    "predict.py": {
+      "sha256": "608e6cdc5e26ddf64e67f1e36a4dca5a854736ff0278d9ffd13e84fb8ea70ae4",
+      "markers_present": true
+    },
+    "tools/provenance.py": {
+      "sha256": "b4f3df69a878486f0419fb9b8fd6781fb08769592bf2b5e711f0bd3c66227d36",
+      "markers_present": true
+    }
+  }
+}

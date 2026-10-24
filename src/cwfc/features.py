@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Biswaketan <https://biswaketan.in>
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Required Notice: do not remove (PolyForm Notices/Violations) - build CWFC-NC1-7Q2M9X4D.
+
 """Leakage-safe lag features for autoregressive forecasting.
 
 Every feature for target position ``t`` uses only values observed before ``t``.

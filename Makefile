@@ -12,6 +12,8 @@ help:
 	@echo "make predict    - regenerate predictions.csv and CV artifacts"
 	@echo "make analysis   - regenerate all EDA tables and report figures"
 	@echo "make experiments - rerun the training-only model pre-study"
+	@echo "make provenance  - regenerate the provenance hash manifest"
+	@echo "make verify-provenance - verify file hashes and notices"
 	@echo "make all        - test + predict + analysis"
 	@echo "make clean      - remove generated caches"
 
@@ -30,6 +32,12 @@ analysis:
 
 experiments:
 	$(PYTHON) analysis/model_experiments.py --data $(DATA)
+
+provenance:
+	$(PYTHON) tools/provenance.py generate
+
+verify-provenance:
+	$(PYTHON) tools/provenance.py verify
 
 all: test predict analysis
 

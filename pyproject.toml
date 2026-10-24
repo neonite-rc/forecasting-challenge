@@ -7,7 +7,7 @@ name = "cloud-workload-forecasting"
 version = "1.0.0"
 description = "End-to-end cloud workload forecasting solution for the Azure V2 VM trace take-home challenge"
 requires-python = ">=3.11"
-license = { text = "Proprietary restricted license; see LICENSE and NOTICE.md (upstream starter files under MIT, see LICENSE-MIT)" }
+license = { text = "PolyForm Noncommercial 1.0.0 (SPDX: PolyForm-Noncommercial-1.0.0); see LICENSE and NOTICE.md (upstream starter files under MIT, see LICENSE-MIT)" }
 dependencies = [
     "numpy>=1.26",
     "pandas>=2.0",
