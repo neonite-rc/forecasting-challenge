@@ -1,21 +1,77 @@
-MIT License
+COPYRIGHT AND RESTRICTED USE LICENSE
+=====================================
 
-Copyright (c) 2026
+Copyright (c) 2026 Biswaketan (GitHub: neonite-rc). All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+The solution work in this repository (the "Work") — including, without
+limitation, the forecasting pipeline and modules under src/cwfc/ newly
+authored for this submission, the analysis/ programs, the test suite,
+reports/ (excluding upstream contract documents), JOURNEY.md, and the
+generated predictions.csv — is the proprietary and copyrighted work of the
+copyright holder. The scope of this license is documented in NOTICE.md. The
+upstream starter materials remain licensed under LICENSE-MIT.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. GRANT OF LIMITED EVALUATION LICENSE
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Subject to your compliance with the terms below, the copyright holder grants
+you a personal, non-exclusive, non-transferable, non-sublicensable, revocable
+license to view, clone, install, and execute the Work solely for the purposes
+of:
+
+  (a) evaluating, reviewing, and assessing the Work as a take-home challenge
+      submission, including reproducing its stated results; and
+  (b) non-commercial academic or educational study.
+
+2. RIGHTS EXPRESSLY NOT GRANTED
+
+No other rights are granted. Without the prior written permission of the
+copyright holder, you may NOT:
+
+  (a) use the Work, in whole or in part, for any commercial purpose, including
+      commercial evaluation, consulting, or incorporation into a commercial
+      product or service;
+
+  (b) create, reproduce, or distribute derivative works based on the Work,
+      including modifications, adaptations, ports, or translations, other than
+      private, non-shared changes made solely to run the Work for the limited
+      purposes in Section 1;
+
+  (c) deploy, host, operate, or embed the Work, or any substantial part of it,
+      in any production environment, production service, or live operational
+      system, whether internal or customer-facing;
+
+  (d) redistribute, publish, sublicense, sell, rent, lease, or otherwise make
+      the Work available to any third party, with or without consideration;
+
+  (e) remove, alter, or obscure any copyright, license, or proprietary notices.
+
+3. OWNERSHIP
+
+The Work is licensed, not sold. The copyright holder retains all right, title,
+and interest in and to the Work, including all intellectual property rights.
+Any feedback, suggestions, or contributions provided to the copyright holder
+may be used without obligation.
+
+4. NO WARRANTY AND LIMITATION OF LIABILITY
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
+
+5. TERMINATION
+
+This license terminates automatically upon any breach of its terms. Upon
+termination you must destroy all copies of the Work in your possession or
+control. Sections 3, 4, and this Section 5 survive termination.
+
+6. PERMISSION REQUESTS
+
+Requests for any use not covered by Section 1 — including commercial use,
+derivative works, redistribution, or production deployment — must be made in
+writing to the copyright holder via the GitHub account neonite-rc.
+
+For the scope of the upstream MIT-licensed materials, see LICENSE-MIT and
+NOTICE.md.

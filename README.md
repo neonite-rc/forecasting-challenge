@@ -154,3 +154,12 @@ Screenshots of the reproduction runs and the nine report figures are available i
 
 numpy, pandas, scikit-learn, statsmodels (runtime); pytest, matplotlib
 (analysis/dev). See `pyproject.toml` / `requirements.txt`.
+
+## License
+
+The original solution work is released under a **restricted proprietary
+license: no commercial use, derivative works, redistribution, or production
+deployment rights are granted**; only evaluation and non-commercial study are
+permitted — see [`LICENSE`](LICENSE). Upstream starter materials remain under
+the MIT license in [`LICENSE-MIT`](LICENSE-MIT); the exact scope of each is
+documented in [`NOTICE.md`](NOTICE.md).
